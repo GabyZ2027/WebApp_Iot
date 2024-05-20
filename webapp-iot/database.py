@@ -41,11 +41,31 @@ class Sensors_BD():
             self.__con.rollback()
             print("Error %s:" % e.args[0])
 
+    def getLecturesAct(self, quantitat):
+        try:
+            self.__cur.execute("SELECT LECTURA FROM SENSORS WHERE SENSOR = '0' ORDER BY DATA DESC LIMIT ?", (quantitat,))
+            lectura = self.__cur.fetchall()
+            lectura_rect = [tupla[0] for tupla in lectura]
+            return lectura_rect
+        except sqlite3.Error as e:
+            self.__con.rollback()
+            print("Error %s:" % e.args[0])
+
     def getLecturaSen(self):
         try:
             self.__cur.execute("SELECT LECTURA FROM SENSORS WHERE SENSOR = '1' AND DATA = (SELECT MAX(DATA) FROM SENSORS WHERE SENSOR = '1')")
             lectura = self.__cur.fetchone()
             return lectura[0] if lectura else None
+        except sqlite3.Error as e:
+            self.__con.rollback()
+            print("Error %s:" % e.args[0])
+
+    def getLecturesSen(self, quantitat):
+        try:
+            self.__cur.execute("SELECT LECTURA FROM SENSORS WHERE SENSOR = '1' ORDER BY DATA DESC LIMIT ?", (quantitat,))
+            lectura = self.__cur.fetchall()
+            lectura_rect = [tupla[0] for tupla in lectura]
+            return lectura_rect
         except sqlite3.Error as e:
             self.__con.rollback()
             print("Error %s:" % e.args[0])
