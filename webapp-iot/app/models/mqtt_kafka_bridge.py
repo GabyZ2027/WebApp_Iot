@@ -9,14 +9,14 @@ class MQTTKafkaBridge:
         self.kafka_broker = kafka_broker
         self.topics = topics
 
-        self.mqtt_client = mqtt.Client("MQTTKafkaBridge")
+        self.mqtt_client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2,"MQTTKafkaBridge")
         self.kafka_client = KafkaClient(hosts=self.kafka_broker)
         self.kafka_producers = {topic: self.kafka_client.topics[topic.encode('ascii')].get_sync_producer() for topic in self.topics}
         self.kafka_consumers = {topic: self.kafka_client.topics[topic.encode('ascii')].get_simple_consumer() for topic in self.topics}
 
-        self.mqtt_client.on_message = lambda client, userdata, message: self.on_message(client, userdata, message, self.kafka_producers)
+        self.mqtt_client.MQTT2Kafka = lambda client, userdata, message: self.MQTT2Kafka(client, userdata, message, self.kafka_producers)
 
-    def on_message(self, client, userdata, message, kafka_producers):
+    def MQTT2Kafka(self, client, userdata, message, kafka_producers):
         msg_payload = str(message.payload.decode('utf-8'))
         mqtt_topic = message.topic
         print('Mensaje MQTT recibido en el topic', mqtt_topic, ':', msg_payload)
@@ -26,7 +26,7 @@ class MQTTKafkaBridge:
             kafka_producer.produce(msg_payload.encode('ascii'))
             print('KAFKA: Publicado', msg_payload, 'al topic', kafka_producer._topic.name.decode())
 
-    def consume_kafka_and_publish_mqtt(self):
+    def Kafka2MQTT(self):
         while True:
             for topic, consumer in self.kafka_consumers.items():
                 message = consumer.consume(block=False)
@@ -42,7 +42,7 @@ class MQTTKafkaBridge:
         for topic in self.topics:
             self.mqtt_client.subscribe(topic)
 
-        kafka_thread = threading.Thread(target=self.consume_kafka_and_publish_mqtt)
+        kafka_thread = threading.Thread(target=self.Kafka2MQTT)
         kafka_thread.start()
 
         self.mqtt_client.loop_start()
