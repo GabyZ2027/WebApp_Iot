@@ -33,7 +33,7 @@ def register():
             return render_template('register.html')
     else:
         return render_template('register.html')
-
+"""
 @auth_blueprint.route('/login', methods = ['GET','POST'])
 def login():
     if request.method == 'POST':
@@ -49,6 +49,31 @@ def login():
     else:
         return render_template('login.html')
 
+"""
+
+@auth_blueprint.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        if 'login' in request.form:
+            username = request.form.get('username')
+            password = request.form.get('password')
+            if username and password and usuaris_BD.login(username, password):
+                session['username'] = username
+                flash('Login successful.', 'success')
+                return redirect(url_for('auth_blueprint.home'))
+            else:
+                flash('Invalid username or password.', 'error')
+                return render_template('login.html')
+
+        elif 'guest' in request.form:
+            flash('Logged in as guest.', 'success')
+            return redirect(url_for('auth_blueprint.home-guest'))
+        
+        elif 'register' in request.form:
+            return redirect(url_for('auth_blueprint.register'))
+    else:
+        return render_template('login.html')
+
 @auth_blueprint.route('/logout')
 def logout():
     session.pop('username', None)
@@ -58,6 +83,10 @@ def logout():
 @auth_blueprint.route('/home')
 def home():
     return render_template('home.html')
+
+@auth_blueprint.route('/home-guest')
+def home_guest():
+    return render_template('home_guest.html')
 
 def status_401(error):
     return redirect(url_for('auth_blueprint.login'))
