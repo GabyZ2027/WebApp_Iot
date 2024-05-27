@@ -1,0 +1,13 @@
+body, h1, h2, h3, h4, h5, h6 {
+    font-family: "Times New Roman", Times, serif;
+  }
+
+div {
+    display: flex;
+    align-items: center;  
+}
+
+.w3-image {
+    height: 80px; 
+    margin-right: 15px;
+}
