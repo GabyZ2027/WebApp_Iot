@@ -8,7 +8,7 @@ class KafkaManager:
         Args:
             hosts (str): The address of the Kafka server in the format "host:port".
         """
-        self.client = KafkaClient(hosts=hosts)
+        self.hosts = hosts
 
     def create_producer(self, topic_name):
         """
@@ -20,7 +20,8 @@ class KafkaManager:
         Returns:
             pykafka.producer.Producer: An instance of the Kafka producer.
         """
-        topic = self.client.topics[topic_name.encode('utf-8')]
+        client = KafkaClient(hosts=self.hosts)
+        topic = client.topics[topic_name.encode('utf-8')]
         producer = topic.get_producer()
         return producer
 
@@ -34,11 +35,12 @@ class KafkaManager:
         Returns:
             pykafka.simpleconsumer.SimpleConsumer: An instance of the Kafka consumer.
         """
-        topic = self.client.topics[topic_name.encode('utf-8')]
+        client = KafkaClient(hosts=self.hosts)
+        topic = client.topics[topic_name.encode('utf-8')]
         consumer = topic.get_simple_consumer()
         return consumer
     
-    def consume(self, topic_name):
+    def consume(self, consumer):
         """
         Consumes messages from the specified topic.
 
@@ -48,13 +50,15 @@ class KafkaManager:
         Returns:
             list: A list of messages received from the topic.
         """
-        consumer = self.create_consumer(topic_name)
+        #consumer = self.create_consumer(topic_name)
         messages = []
         for message in consumer:
             if message is not None:
+                print("Mensaje consumido")
+                print(message.value.decode('utf-8'))
                 messages.append(message.value.decode('utf-8'))
         return messages
-    def produce(self, topic_name, message):
+    def produce(self, producer, message):
         """
         Produces a message to the specified topic.
 
@@ -65,5 +69,4 @@ class KafkaManager:
         Returns:
             None
         """
-        producer = self.create_producer(topic_name)
         producer.produce(message)

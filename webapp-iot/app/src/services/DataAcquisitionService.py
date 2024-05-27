@@ -1,31 +1,67 @@
-from threading import Thread
-import time
-from src.models.kafka import KafkaManager
-from src.models.database import Sensors_BD
+from multiprocessing import Process
 
-TS = 1 #segons
+TS = 3  # segundos
 
-class Data_Acquisition(Thread):
-    def __init__(self, kafka_manager, kafka_topics, db_name, db_max):
-        Thread.__init__(self)
+class Data_Acquisition(Process):
+    def __init__(self, kafka_manager, kafka_topics, request_queue):
+        super().__init__()
         self.kafka_manager = kafka_manager
         self.kafka_topics = kafka_topics
-        self.db = Sensors_BD(db_name, db_max)
         self.daemon = True
+        self.consumers = []
+        self.request_queue = request_queue  # Cola de solicitudes para el servidor de la base de datos
 
     def run(self):
+        for topic in self.kafka_topics:
+            self.consumers.append(self.kafka_manager.create_consumer(topic))
         while True:
-            for topic in self.kafka_topics:
-                messages = self.kafka_manager.consume(topic)
-                for msg_payload in messages:
-                    print(f'Mensaje Kafka recibido en el topic {topic}: {msg_payload}')
-                    self.save_message_to_db(topic, msg_payload)
-            time.sleep(TS)
+            for consumer in self.consumers:
+                for message in consumer:
+                    if message is not None:
+                        msg_payload = message.value.decode('utf-8')
+                        msg_data = msg_payload.split(',')
+                        print(f'Mensaje Kafka recibido en el topic {consumer._topic.name.decode()}: {msg_payload}')
+                        self.save_message_to_db(msg_data)
 
-    def save_message_to_db(self, topic, payload):
-        #cambiarlo a algo mas escalable que con una unica función
-        #escribas en la bd, especificando el id que te viene en el mensaje
-        if topic == 'temperature4':
-            self.db.setLecturaSen(payload) 
-        elif topic == 'led':
-            self.db.setLecturaAct(payload)
+    def save_message_to_db(self, payload):
+        # Crear una solicitud para guardar el mensaje en la base de datos
+        request = {'type': 'setLectura', 'id': int(payload[0]), 'lectura': str(payload[1])}
+        self.request_queue.put(request)
+
+
+"""
+from multiprocessing import Process
+import time
+from src.models.kafka import KafkaManager
+from src.models.S_database import Sensors_BD
+
+TS = 3 # segundos
+
+class Data_Acquisition(Process):
+    def __init__(self, kafka_manager, kafka_topics, db):
+        super().__init__()
+        self.kafka_manager = kafka_manager
+        self.kafka_topics = kafka_topics
+        self.daemon = True
+        self.consumers = []
+        self.db = db
+
+    def run(self):
+        
+        for topic in self.kafka_topics:
+            self.consumers.append(self.kafka_manager.create_consumer(topic))
+        while True:
+            for consumer in self.consumers:
+                for message in consumer:
+                    if message is not None:
+                        msg_payload = message.value.decode('utf-8')
+                        msg_data = msg_payload.split(',')
+                        print(f'Mensaje Kafka recibido en el topic {consumer._topic.name.decode()}: {msg_payload}')
+                        self.save_message_to_db(msg_data)
+                    #time.sleep(TS)
+                   
+            
+
+    def save_message_to_db(self,payload):
+        self.db.setLectura(int(payload[0]),str(payload[1])) 
+"""

@@ -9,10 +9,10 @@ def index():
 
 if __name__ == '__main__':
     try:
-        app.run(debug=True)
+        app.run(debug=True,port=5600)
     except KeyboardInterrupt:
         print("Proceso interrumpido por el usuario.")
     finally:
         # Detener los consumidores al finalizar la aplicación
-        app.kafka_consumer.join()
-        app.mqtt_kafka_bridge.stop()
+        app.data_acquisition_process.join()
+        #app.mqtt_kafka_bridge.stop()
