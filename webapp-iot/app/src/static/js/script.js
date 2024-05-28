@@ -41,10 +41,14 @@ const chartOptions = {
     }
 };
 
+let charttemp = null;
+let charthum = null;
+var graf_temperatura = document.getElementById('Temperatura').getContext('2d');
+var graf_humitat = document.getElementById('Humitat').getContext('2d');
 
-function FerGrafica(dades,temps,graf,nom_label,taula) {
-    if (taula) {
-        taula.destroy(); 
+function FerGrafica(dades, temps, graf, nom_label, chart) {
+    if (chart) {
+        chart.destroy();
     }
     var variable_dades = {
         labels: temps,
@@ -64,14 +68,14 @@ function FerGrafica(dades,temps,graf,nom_label,taula) {
 }
 
 // Historials
-function Historial(path,graf,nom_label,taula) {
+function Historial(path, graf, nom_label, chartVarName) {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', path, true);
-    xhr.onreadystatechange = function() {
+    xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
                 var data = JSON.parse(xhr.responseText);
-                taula.chart=FerGrafica(data.data,data.temps,graf,nom_label,taula.chart)
+                window[chartVarName] = FerGrafica(data.data, data.temps, graf, nom_label, window[chartVarName]);
                 console.log("Historial: ", data);
             } else {
                 console.error("Error a l'obrindre el historial:", xhr.status);
@@ -81,25 +85,18 @@ function Historial(path,graf,nom_label,taula) {
     xhr.send();
 }
 
-let charttemp;
-let charthum;
-let chartled;
-var graf_temperatura = document.getElementById('Temperatura').getContext('2d');
-var graf_humitat = document.getElementById('Humitat').getContext('2d');
-/*var graf_led = document.getElementById('LedHistorial').getContext('2d');*/
+Historial('/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
+Historial('/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
 
-Historial('/sensor/temperatura/historial',graf_temperatura,'Temperatura',{ chart: charttemp })
-Historial('/sensor/humitat/historial',graf_humitat,'Humitat',{ chart: charthum })
-setInterval(Historial,300000,'/sensor/temperatura/historial',graf_temperatura,'Temperatura',{ chart: charttemp })
-setInterval(Historial,300000,'/sensor/humitat/historial',graf_humitat,'Humitat',{ chart: charthum })
+setInterval(function() {
+    Historial('/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
+}, 30000);
 
-/*
-    Historial('/led/historial',graf_led,'LED',{chart: chartled});
-}, 20000);
-*/
+setInterval(function() {
+    Historial('/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
+}, 30000);
 
-
-//Actuador
+// Actuador
 function toggleLED(state) {
     var xhr = new XMLHttpRequest();
     xhr.open("POST", '/led', true);
@@ -107,37 +104,41 @@ function toggleLED(state) {
     xhr.send("led-status=" + (state === 'on' ? '1' : '0'));
 }
 
-// Valors actuals
-var T = document.getElementById("Tactual")
+// Valores actuales
+var T = document.getElementById("Tactual");
 var H = document.getElementById("Hactual");
 
-function Actual(path, variable){
-    var r;
-    r=new XMLHttpRequest();
-    r.open('GET',path,true);
+function Actual(path, variable) {
+    var r = new XMLHttpRequest();
+    r.open('GET', path, true);
     r.send();
     r.onreadystatechange = function () {
-        if (r.status==200 && r.readyState == 4){
+        if (r.status == 200 && r.readyState == 4) {
             var response = JSON.parse(r.responseText);
-            variable.textContent = response.data; 
+            variable.textContent = response.data;
         }
     }
 }
 
-Actual('/sensor/temperatura', T)
-Actual('/sensor/humitat', H)
-setInterval(Actual,60000,'/sensor/temperatura', T)
-setInterval(Actual,60000,'/sensor/humitat', H)
+Actual('/sensor/temperatura', T);
+Actual('/sensor/humitat', H);
 
-var L = document.getElementById("Led")
+setInterval(function() {
+    Actual('/sensor/temperatura', T);
+}, 30000);
+
+setInterval(function() {
+    Actual('/sensor/humitat', H);
+}, 30000);
+
+var L = document.getElementById("Led");
 
 function update_led(variable) {
-    var r;
-    r=new XMLHttpRequest();
-    r.open('GET','/led',true);
+    var r = new XMLHttpRequest();
+    r.open('GET', '/led', true);
     r.send();
     r.onreadystatechange = function () {
-        if (r.status==200 && r.readyState == 4){
+        if (r.status == 200 && r.readyState == 4) {
             var response = JSON.parse(r.responseText);
             if (response.data === '1') {
                 variable.src = "https://static.vecteezy.com/system/resources/previews/005/032/239/non_2x/bulb-light-on-free-vector.jpg";
@@ -148,5 +149,6 @@ function update_led(variable) {
     }
 }
 
-setInterval(update_led,60000,L)
-
+setInterval(function() {
+    update_led(L);
+}, 20000);

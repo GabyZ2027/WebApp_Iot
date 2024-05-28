@@ -77,14 +77,3 @@ class Usuaris_BD():
         except sqlite3.Error as e:
             self.__con.rollback()
             print("Error %s:" % e.args[0])
-
-                    
-        
-    
-                
-
-                    
-        
-
-        
-

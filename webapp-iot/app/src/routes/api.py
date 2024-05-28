@@ -2,114 +2,98 @@ from flask import Blueprint, jsonify, request, current_app
 from src.models.kafka import KafkaManager
 from config import Config
 from time import sleep
+from queue import Queue
+
 api_blueprint = Blueprint('api_blueprint', __name__)
 
 kafka_manager = KafkaManager(Config.KAFKA_BROKER)
 
 producer = kafka_manager.create_producer(Config.ACTUATOR_TOPICS)
 
-def set_queues(s_request_queue,s_response_queue):
-    global request_queue, response_queue
-    request_queue = s_request_queue
-    response_queue = s_response_queue
+
+
+def set_queues(s_request_queues, s_response_queues):
+    global request_queues, response_queues
+    request_queues = s_request_queues
+    response_queues = s_response_queues
 
 @api_blueprint.route('/sensor/temperatura/historial', methods=['GET'])
 def temperatura_historial():
     request_msg = {'type': 'getLectures', 'id': 0, 'quantitat': 10}
-    request_queue.put(request_msg)
-    sleep(3)
+    request_queues['temperatura_hist'].put(request_msg)
     response = False
     while isinstance(response, bool):
-        response = response_queue.get()
-    
-    if not isinstance(response, tuple):
-        return jsonify({"error": "Error retrieving humidity"}), 500
-    if response[0] == "get"+str(request_msg['id']):
-        return jsonify({"temps": [t[1] for t in response[1]], "data": [round(int(t[0]),1) for t in response[1]]})
+        print(response)
+        response = response_queues['temperatura_hist'].get()
+    if response[0] == "get" + str(request_msg['id']):
+        return jsonify({"temps": [t[1] for t in response[1]], "data": [t[0] for t in response[1]]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
-
 @api_blueprint.route('/sensor/humitat/historial', methods=['GET'])
 def humitat_historial():
-    request_msg = {'type': 'getLectures', 'id': 2, 'quantitat': 10}
-    request_queue.put(request_msg)
+    request_msg = {'type': 'getLectures', 'id': 1, 'quantitat': 10}
+    request_queues['humedad_hist'].put(request_msg)  
     response = False
     while isinstance(response, bool):
-        response = response_queue.get()
-    
-    if not isinstance(response, tuple):
-        return jsonify({"error": "Error retrieving humidity"}), 500
-    if response[0] == "get"+str(request_msg['id']):
-        return jsonify({"temps": [h[1] for h in response[1]], "data": [round(int(h[0]),1) for h in response[1]]})
+        print(response)
+        response = response_queues['humedad_hist'].get()
+    if response[0] == "get" + str(request_msg['id']):
+        return jsonify({"temps": [h[1] for h in response[1]], "data": [h[0] for h in response[1]]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
 @api_blueprint.route('/led/historial', methods=['GET'])
 def led_historial():
-    request_msg = {'type': 'getLectures', 'id': 0, 'quantitat': 10}
-    request_queue.put(request_msg)
-    led_historial = False
-    while(not led_historial):
-        led_historial = response_queue.get()
-    if not isinstance(led_historial, list):
-        return jsonify({"error": "Error retrieving LED history"}), 500
-
-    return jsonify({"temps": [l[2] for l in led_historial], "data": [l[1] for l in led_historial]})
-
-@api_blueprint.route('/sensor/humitat', methods=['GET'])
-def humitat():
-    request_msg = {'type': 'getLectura', 'id': 2}
-    request_queue.put(request_msg)
-    
+    request_msg = {'type': 'getLectures', 'id': 2, 'quantitat': 10}
+    request_queues['led_hist'].put(request_msg)
     response = False
     while isinstance(response, bool):
-        response = response_queue.get()
-    
-    if not isinstance(response, tuple):
-        return jsonify({"error": "Error retrieving humidity"}), 500
-    
-    if response[0] == request_msg['id']:
-        return jsonify({"humidity": response[2], "data": round(int(response[1]),1)})
+        print(response)
+        response = response_queues['led_hist'].get()
+    if response[0] == "get" + str(request_msg['id']):
+        return jsonify({"temps": [l[2] for l in response[1]], "data": [l[1] for l in response[1]]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
-
-    
+@api_blueprint.route('/sensor/humitat', methods=['GET'])
+def humitat():
+    request_msg = {'type': 'getLectura', 'id': 1}
+    request_queues['humedad'].put(request_msg)
+    response = False
+    while isinstance(response, bool):
+        print(response)
+        response = response_queues['humedad'].get()
+    print("hum:",response)
+    if response[0] == request_msg['id']:
+        return jsonify({"humidity": response[2], "data": response[1]})
+    else:
+        return jsonify({"error": "Invalid response ID"}), 500
 
 @api_blueprint.route('/sensor/temperatura', methods=['GET'])
 def temperatura():
     request_msg = {'type': 'getLectura', 'id': 0}
-    request_queue.put(request_msg)
-    
+    request_queues['temperatura'].put(request_msg)
     response = False
     while isinstance(response, bool):
-        response = response_queue.get()
-    
-    if not isinstance(response, tuple):
-        return jsonify({"error": "Error retrieving temperature"}), 500
-    
+        print(response)
+        response = response_queues['temperatura'].get()
+    print("temp:",response)
     if response[0] == request_msg['id']:
-        return jsonify({"temps": response[2], "data": round(int(response[1]),1)})
+        return jsonify({"temps": response[2], "data": response[1]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
-
-    
 
 @api_blueprint.route('/led', methods=['GET', 'POST'])
 def led():
     if request.method == 'GET':
-        request_msg = {'type': 'getLectura', 'id': 1}
-        request_queue.put(request_msg)
-        led = False
-        while(not led):
-            led = response_queue.get()
-        
-        if not isinstance(led, tuple):
-            return jsonify({"error": "Error retrieving LED status"}), 500
-
-        return jsonify({"temps": led[1], "data": led[0]})
-    
+        request_msg = {'type': 'getLectura', 'id': 2}
+        request_queues['led'].put(request_msg)
+        response = False
+        while isinstance(response, bool):
+            print(response)
+            response = response_queues['led'].get()
+        return jsonify({"temps": response[2], "data": response[1]})
     elif request.method == 'POST':
         data = request.get_data(as_text=True)
         if "led-status=1" in data:
@@ -122,6 +106,7 @@ def led():
             return "LED OFF"
         else:
             return "Message not recognized"
+
 
 """
 from flask import Blueprint, jsonify, request, current_app

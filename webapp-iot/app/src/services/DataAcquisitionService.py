@@ -25,7 +25,7 @@ class Data_Acquisition(Thread):
             if message is not None:
                 msg_payload = message.value.decode('utf-8')
                 msg_data = msg_payload.split(',')
-                print(f'Mensaje Kafka recibido en el topic {consumer._topic.name.decode()}: {msg_payload}')
+                #print(f'Mensaje Kafka recibido en el topic {consumer._topic.name.decode()}: {msg_payload}')
                 self.save_message_to_db(msg_data)
                 time.sleep(TS)
 

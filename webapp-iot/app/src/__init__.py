@@ -7,6 +7,7 @@ from src.models.kafka import KafkaManager
 from src.models.S_database import DatabaseServer
 
 from src.routes.api import api_blueprint,set_queues
+from src.routes.AuthApi import set_queues as sq
 from src.routes.AuthApi import auth_blueprint
 
 app = Flask(__name__)
@@ -22,17 +23,40 @@ def init_app():
     app.kafka_manager = kafka_manager
 
     #Inicio proceso Database
-    request_queue = Queue()
-    response_queue = Queue()
-    app.request_queue = request_queue
-    app.response_queue = response_queue
-    set_queues(request_queue,response_queue)
+    request_queues = {
+        'temperatura': Queue(),
+        'temperatura_hist': Queue(),
+        'humedad': Queue(),
+        'humedad_hist': Queue(),
+        'led': Queue(),
+        'led_hist': Queue(),
+        'auth': Queue(),
+        'register': Queue(),
+        'login': Queue(),
+        'general':Queue(),
+    }
+
+    response_queues = {
+        'temperatura': Queue(),
+        'temperatura_hist': Queue(),
+        'humedad': Queue(),
+        'humedad_hist': Queue(),
+        'led': Queue(),
+        'led_hist': Queue(),
+        'auth': Queue(),
+        'register': Queue(),
+        'login': Queue(),
+        'general':Queue(),
+    }
+    set_queues(request_queues,response_queues)
+
+    sq(request_queues,response_queues)
     
-    db_server = DatabaseServer(Config.DATABASE_NAME, Config.DATABASE_MAX, request_queue, response_queue)
+    db_server = DatabaseServer(Config.DATABASE_NAME, Config.DATABASE_MAX, request_queues, response_queues)
     db_server.start()
 
     # Iniciar proceso del Servicio de Data Acquisition
-    data_acquisition_process = Data_Acquisition(kafka_manager, Config.SENSOR_TOPICS, request_queue)
+    data_acquisition_process = Data_Acquisition(kafka_manager, Config.SENSOR_TOPICS, request_queues['general'])
     data_acquisition_process.start()
     
     # Iniciar el proceso del bridge MQTT-Kafka

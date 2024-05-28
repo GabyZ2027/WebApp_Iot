@@ -11,19 +11,19 @@ import sys
 #Actudador(LED) = 0
 #Sensor(Temperatura) = 1
 #Sensor(Humitat) = 2
-
-
-from multiprocessing import Process, Queue
-import sqlite3
 from time import sleep
+from multiprocessing import Process, Queue
+from queue import Empty
+import sqlite3
+import bcrypt
 
 class DatabaseServer(Process):
-    def __init__(self, db_name, max_size, request_queue, response_queue):
+    def __init__(self, db_name, max_size, request_queues, response_queues):
         super().__init__()
         self.db_name = db_name
         self.max_size = max_size
-        self.request_queue = request_queue
-        self.response_queue = response_queue
+        self.request_queues = request_queues
+        self.response_queues = response_queues
         self.db_connection = None
         self.db_cursor = None
 
@@ -37,22 +37,28 @@ class DatabaseServer(Process):
                 DATA TEXT NOT NULL,
                 LECTURA TEXT NOT NULL
             );
+            CREATE TABLE IF NOT EXISTS USERS(
+                NOM TEXT PRIMARY KEY,
+                PASSW TEXT                          
+            );
             """)
             self.db_connection.commit()
 
             while True:
-                request = self.request_queue.get()
-                if request is None:
-                    break
-                response = self.handle_request(request)
-                print("Resposta:",response)
-                self.response_queue.put(response)
+                for queue_name, request_queue in self.request_queues.items():
+                    try:
+                        request = request_queue.get(timeout=0.1) 
+                        response = self.handle_request(request)
+                        self.response_queues[queue_name].put(response)
+                        sleep(1)
+                    except Empty:
+                        pass
 
         except sqlite3.Error as e:
             if self.db_connection:
                 self.db_connection.rollback()
                 self.db_connection.close()
-                print("Error %s:" % e.args[0])
+            print("Error %s:" % e.args[0])
 
     def handle_request(self, request):
         if request['type'] == 'getLectura':
@@ -61,11 +67,15 @@ class DatabaseServer(Process):
             return self.get_lectures(request['id'], request['quantitat'])
         elif request['type'] == 'setLectura':
             return self.set_lectura(request['id'], request['lectura'])
+        elif request['type'] == 'registerUser':
+            return self.register_user(request['username'], request['password'])
+        elif request['type'] == 'loginUser':
+            return self.login_user(request['username'], request['password'])
 
     def get_lectura(self, id):
         try:
             self.db_cursor.execute(
-                "SELECT LECTURA, DATA FROM SENSORS WHERE ID = ? ORDER BY ROWID DESC LIMIT 1",
+                "SELECT LECTURA, DATA FROM SENSORS WHERE ID = ? ORDER BY DATA DESC LIMIT 1",
                 (id,)
             )
             lectura = self.db_cursor.fetchone()
@@ -77,13 +87,11 @@ class DatabaseServer(Process):
     def get_lectures(self, id, quantitat):
         try:
             self.db_cursor.execute(
-                "SELECT LECTURA, DATA FROM SENSORS WHERE ID = ? LIMIT ?",
+                "SELECT LECTURA, DATA FROM SENSORS WHERE ID = ? ORDER BY DATA DESC LIMIT ?",
                 (id, quantitat)
             )
             lecturas = self.db_cursor.fetchall()
-            print(lecturas)
-            return("get"+str(id),lecturas)
-            #return [(lectura[0], lectura[1]) for lectura in lecturas]
+            return ("get" + str(id), lecturas)
         except sqlite3.Error as e:
             print("Error %s:" % e.args[0])
             return []
@@ -107,9 +115,43 @@ class DatabaseServer(Process):
             print("Error %s:" % e.args[0])
             return False
 
+    def register_user(self, username, password):
+        try:
+            self.db_cursor.execute("SELECT NOM FROM USERS WHERE NOM = ?", (username,))
+            if self.db_cursor.fetchone() is None:
+                hashed_password = bcrypt.hashpw(password.encode(), bcrypt.gensalt())
+                self.db_cursor.execute("INSERT INTO USERS (NOM, PASSW) VALUES (?, ?)", (username, hashed_password))
+                self.db_connection.commit()
+                return True
+            else:
+                return False
+        except sqlite3.Error as e:
+            self.db_connection.rollback()
+            print("Error %s:" % e.args[0])
+            return False
+
+    def login_user(self, name, passw):
+        try:
+            if self.getUser(name) == True:
+                self.__cur.execute("SELECT PASSW FROM USERS WHERE NOM = ?", (name,))
+                lectura = self.__cur.fetchone()
+                hash = lectura[0]
+                epassw = passw.encode()
+                if bcrypt.checkpw(epassw,hash):
+                    return True     #S'ha verificat
+                else:
+                    return False    #Passwd incorrecte
+            else:  
+                return None         #No existeix l'usuari
+        except sqlite3.Error as e:
+            self.__con.rollback()
+            print("Error %s:" % e.args[0])
+
     def close_connection(self):
         if self.db_connection:
             self.db_connection.close()
+
+
 
 def main():
     request_queue = Queue()

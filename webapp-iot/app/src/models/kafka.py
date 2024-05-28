@@ -1,4 +1,5 @@
 from pykafka import KafkaClient
+from time import time
 
 class KafkaManager:
     def __init__(self, hosts):
@@ -40,6 +41,30 @@ class KafkaManager:
         consumer = topic.get_simple_consumer()
         return consumer
     
+    def consume_latest(self,consumer, timeout: float = 2.0):
+        """
+        Consume mensajes de Kafka hasta que se recibe uno nuevo o hasta que se alcanza el timeout.
+        
+        :param consumer: Un consumidor de Pykafka configurado.
+        :param timeout: Tiempo en segundos para esperar nuevos mensajes antes de detenerse.
+        :return: Una lista de mensajes consumidos.
+        """
+        start_time = time()
+        messages = []
+
+        for message in consumer:
+            if message is not None:
+                messages.append(message.value.decode('utf-8'))
+                print("Mensaje consumido:", message.value.decode('utf-8'))
+                start_time = time() 
+
+            if time() - start_time > timeout:
+                break
+
+        print("Fin del consumo")
+        return messages
+
+
     def consume(self, consumer):
         """
         Consumes messages from the specified topic.
@@ -57,7 +82,9 @@ class KafkaManager:
                 print("Mensaje consumido")
                 print(message.value.decode('utf-8'))
                 messages.append(message.value.decode('utf-8'))
+        print("FI")
         return messages
+    
     def produce(self, producer, message):
         """
         Produces a message to the specified topic.

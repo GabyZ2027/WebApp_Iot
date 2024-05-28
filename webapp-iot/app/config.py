@@ -1,3 +1,4 @@
+import os
 class Config:
     DATABASE_NAME = 'sensors.db'
     DATABASE_MAX = 1000  # NUM REGISTROS
@@ -5,4 +6,5 @@ class Config:
     KAFKA_BROKER = '172.17.0.3:9092'
     SENSOR_TOPICS = ['temperature_assi', 'led_assi', 'humitat_assi']
     ACTUATOR_TOPICS = 'led_act'
-
+    SECRET_KEY = os.environ.get('SECRET_KEY') or 'your_secret_key'
+    DATABASE = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'instance', 'usuaris.db')
