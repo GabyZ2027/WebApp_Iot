@@ -1,0 +1,84 @@
+
+{% block title %}
+<title>Projecte ASSI</title>
+<meta charset="UTF-8" />
+{% endblock %}
+
+{% block framework %}
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"> 
+{% endblock %}
+
+{% block graf %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>    
+{% endblock %}
+
+{% block customCSS %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+{% endblock %}
+
+{% block header %}
+<div class="w3-bar w3-margin">
+  <span class="font-weight-bold" style="font-size: 48px;">Projecte ASSI</span>
+</div>
+{% endblock %}
+
+{% block body %}
+    <div class="w3-cell-row w3-light-blue">
+      <h1 class="w3-margin">LED</h1>
+    </div> 
+
+    <div class="w3-cell-row">
+      <div class="w3-container w3-cell">
+        <div class="w3-bar w3-margin">
+          <img id="Led" src="https://cdn-icons-png.flaticon.com/512/32/32177.png" class="w3-image w3-circle" style="width: 40 px;height: 60 px;" alt="LED"></a>
+          <p><button onclick="toggleLED('on')" class="w3-button w3-green w3-round-large">ON</button></p>
+          <p><button onclick="toggleLED('off')" class="w3-button w3-red w3-round-large">OFF</button></p>
+        </div>
+        <h3 class="w3-margin">Historial</h3>
+        <div class ="w3-margin" style="width: 600px; height: 300px;">
+          <canvas id="Led"></canvas>
+        </div>  
+      </div>
+    </div>  
+
+    <div class="w3-cell-row w3-light-blue">
+      <h1 class="w3-margin">Sensors</h1>
+    </div> 
+
+    <div class="w3-cell-row">
+
+      <div class="w3-container w3-cell">
+        <div class="w3-bar w3-margin">
+          <img src="https://cdn-icons-png.flaticon.com/512/4158/4158502.png" class="w3-image w3-circle"></a>
+          <h2>Temperatura</h2>
+        </div>
+
+        <span id="Tactual" class="w3-tag w3-jumbo w3-margin w3-dark-grey w3-padding-large">66</span>
+
+        <h3 class="w3-margin">Historial</h3>
+
+        <div class ="w3-margin" style="width: 600px; height: 300px;">
+          <canvas id="Temperatura"></canvas>
+        </div>  
+      </div>
+    
+      <div class="w3-container w3-cell">
+        <div class ="w3-bar w3-margin">
+          <img src="https://cdn-icons-png.freepik.com/512/68/68870.png" class="w3-image w3-circle"></a> 
+          <h2>Humitat</h2>
+        </div>
+
+        <span id="Hactual" class="w3-tag w3-jumbo w3-margin w3-dark-grey w3-padding-large">66</span>
+
+        <h3 class="w3-margin">Historial</h3>
+
+        <div class ="w3-margin" style="width: 600px; height: 300px;">
+          <canvas id="Humitat"></canvas>
+        </div>  
+      </div>
+    </div>
+{% endblock %}
+
+{% block javascript %}
+<script src="{{url_for('static', filename='js/script.js')}}"></script>  
+{% endblock %}
