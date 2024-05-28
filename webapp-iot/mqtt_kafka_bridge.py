@@ -26,23 +26,31 @@ class MQTTKafkaBridge:
                 mqtt_client.publish(self.kafka_topic, msg_payload)
                 print(f'MQTT: Publicado {msg_payload} en el topic {self.kafka_topic}')
 
-    def on_message(self, client, userdata, message, kafka_producer):
+    def on_message(self, client, userdata, message, kafka_producers):
         msg_payload = str(message.payload.decode('utf-8'))
         mqtt_topic = message.topic
         print(f'Mensaje MQTT recibido en el topic {mqtt_topic}: {msg_payload}')
         
+        kafka_producer = kafka_producers[mqtt_topic]
+        print(kafka_producer)
         kafka_producer.produce(msg_payload.encode('ascii'))
         print(f'KAFKA: Publicado {msg_payload} al topic {kafka_producer._topic.name.decode()}')
+
 
     def consume_mqtt_publish_kafka(self):
         mqtt_client = mqtt.Client()
         mqtt_client.connect(self.mqtt_broker)
 
         kafka_client = KafkaClient(hosts=self.kafka_broker)
-        kafka_topic = kafka_client.topics[self.kafka_topic.encode('ascii')]
-        kafka_producer = kafka_topic.get_sync_producer()
-
-        mqtt_client.on_message = lambda client, userdata, message: self.on_message(client, userdata, message, kafka_producer)
+        kafka_producers = {}
+        
+        for mqtt_topic in self.mqtt_topics:
+            kafka_topic_name = mqtt_topic
+            kafka_topic = kafka_client.topics[kafka_topic_name.encode('ascii')]
+            kafka_producers[mqtt_topic] = kafka_topic.get_sync_producer()
+            
+        mqtt_client.on_message = lambda client, userdata, message: self.on_message(client, userdata, message, kafka_producers)
+        
         for topic in self.mqtt_topics:
             mqtt_client.subscribe(topic)
 
@@ -59,7 +67,7 @@ class MQTTKafkaBridge:
         self.kafka_mqtt_process.join()
 
 if __name__ == "__main__":
-    mqtt_kafka_bridge = MQTTKafkaBridge("mqtt.eclipseprojects.io", "172.17.0.3:9092", ["temperature_assi", "led_assi"], "led_act")
+    mqtt_kafka_bridge = MQTTKafkaBridge("mqtt.eclipseprojects.io", "172.17.0.3:9092", ["temperature_assi", "led_assi","humitat_assi"], "led_act")
 
     mqtt_kafka_process = Process(target=mqtt_kafka_bridge.consume_mqtt_publish_kafka)
     kafka_mqtt_process = Process(target=mqtt_kafka_bridge.consume_kafka_publish_mqtt)

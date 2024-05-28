@@ -1,6 +1,12 @@
 from flask import Blueprint, jsonify, request, current_app
+from src.models.kafka import KafkaManager
+from config import Config
 from time import sleep
 api_blueprint = Blueprint('api_blueprint', __name__)
+
+kafka_manager = KafkaManager(Config.KAFKA_BROKER)
+
+producer = kafka_manager.create_producer(Config.ACTUATOR_TOPICS)
 
 def set_queues(s_request_queue,s_response_queue):
     global request_queue, response_queue
@@ -87,10 +93,12 @@ def led():
     elif request.method == 'POST':
         data = request.get_data(as_text=True)
         if "led-status=1" in data:
-            current_app.kafka_manager.produce("led", "1")
+            led_message = "1"
+            kafka_manager.produce(producer, led_message.encode('utf-8'))
             return "LED ON"
         elif "led-status=0" in data:
-            current_app.kafka_manager.produce("led", "0")
+            led_message = "0"
+            kafka_manager.produce(producer, led_message.encode('utf-8'))
             return "LED OFF"
         else:
             return "Message not recognized"
