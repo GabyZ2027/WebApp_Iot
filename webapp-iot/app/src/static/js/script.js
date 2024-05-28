@@ -86,16 +86,19 @@ let charthum;
 let chartled;
 var graf_temperatura = document.getElementById('Temperatura').getContext('2d');
 var graf_humitat = document.getElementById('Humitat').getContext('2d');
-var graf_led = document.getElementById('LedHistorial').getContext('2d');
+/*var graf_led = document.getElementById('LedHistorial').getContext('2d');*/
 
-setInterval(function() {
+setInterval(Historial,20000,'/sensor/temperatura/historial',graf_temperatura,'Temperatura',{ chart: charttemp })
+setInterval(Historial,20000,'/sensor/humitat/historial',graf_humitat,'Humitat',{ chart: charthum })
+
+/*setInterval(function() {
     Historial('/sensor/temperatura/historial',graf_temperatura,'Temperatura',{ chart: charttemp });
     Historial('/sensor/humitat/historial',graf_humitat,'Humitat',{ chart: charthum });
     Historial('/led/historial',graf_led,'LED',{chart: chartled});
 }, 20000);
 
 Historial('/sensor/temperatura/historial',graf_temperatura,'Temperatura',{ chart: charttemp });
-Historial('/sensor/humitat/historial',graf_humitat,'Humitat',{ chart: charthum });
+Historial('/sensor/humitat/historial',graf_humitat,'Humitat',{ chart: charthum });*/
 
 
 //Actuador
@@ -122,10 +125,9 @@ function Actual(path, variable){
         }
     }
 }
-setInterval(function() {
-    Actual('/sensor/temperatura', T);
-    Actual('/sensor/humitat', H);
-}, 20000);
+
+setInterval(Actual,2000,'/sensor/temperatura', T)
+setInterval(Actual,2000,'/sensor/humitat', T)
 
 var L = document.getElementById("Led")
 
@@ -146,6 +148,5 @@ function update_led(variable) {
     }
 }
 
-setInterval(function() {
-    update_led(L);
-}, 2000);
+setInterval(update_led,2000,L)
+
