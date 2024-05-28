@@ -69,7 +69,7 @@ class DatabaseServer(Process):
                 (id,)
             )
             lectura = self.db_cursor.fetchone()
-            return (lectura[0], lectura[1]) if lectura else None
+            return (id, lectura[0], lectura[1]) if lectura else None
         except sqlite3.Error as e:
             print("Error %s:" % e.args[0])
             return None
@@ -82,7 +82,7 @@ class DatabaseServer(Process):
             )
             lecturas = self.db_cursor.fetchall()
             print(lecturas)
-            return(lecturas)
+            return("get"+str(id),lecturas)
             #return [(lectura[0], lectura[1]) for lectura in lecturas]
         except sqlite3.Error as e:
             print("Error %s:" % e.args[0])

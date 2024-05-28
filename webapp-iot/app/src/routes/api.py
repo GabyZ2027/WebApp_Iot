@@ -18,27 +18,32 @@ def temperatura_historial():
     request_msg = {'type': 'getLectures', 'id': 0, 'quantitat': 10}
     request_queue.put(request_msg)
     sleep(3)
-    temperatura_historial = False
-    while(not temperatura_historial):
-        temperatura_historial = response_queue.get()
-    print(f'getLectures response: {temperatura_historial}')
-    if not isinstance(temperatura_historial, list):
-        return jsonify({"error": "Error retrieving temperature history"}), 500
+    response = False
+    while isinstance(response, bool):
+        response = response_queue.get()
+    
+    if not isinstance(response, tuple):
+        return jsonify({"error": "Error retrieving humidity"}), 500
+    if response[0] == "get"+str(request_msg['id']):
+        return jsonify({"temps": [t[1] for t in response[1]], "data": [t[0] for t in response[1]]})
+    else:
+        return jsonify({"error": "Invalid response ID"}), 500
 
-    return jsonify({"temps": [t[1] for t in temperatura_historial], "data": [t[0] for t in temperatura_historial]})
 
 @api_blueprint.route('/sensor/humitat/historial', methods=['GET'])
 def humitat_historial():
     request_msg = {'type': 'getLectures', 'id': 2, 'quantitat': 10}
     request_queue.put(request_msg)
-    humitat_historial = False
-    while(not humitat_historial):
-        humitat_historial = response_queue.get()
+    response = False
+    while isinstance(response, bool):
+        response = response_queue.get()
     
-    if not isinstance(humitat_historial, list):
-        return jsonify({"error": "Error retrieving humidity history"}), 500
-
-    return jsonify({"temps": [h[1] for h in humitat_historial], "data": [h[0] for h in humitat_historial]})
+    if not isinstance(response, tuple):
+        return jsonify({"error": "Error retrieving humidity"}), 500
+    if response[0] == "get"+str(request_msg['id']):
+        return jsonify({"temps": [h[1] for h in response[1]], "data": [h[0] for h in response[1]]})
+    else:
+        return jsonify({"error": "Invalid response ID"}), 500
 
 @api_blueprint.route('/led/historial', methods=['GET'])
 def led_historial():
@@ -50,36 +55,51 @@ def led_historial():
     if not isinstance(led_historial, list):
         return jsonify({"error": "Error retrieving LED history"}), 500
 
-    return jsonify({"temps": [l[1] for l in led_historial], "data": [l[0] for l in led_historial]})
+    return jsonify({"temps": [l[2] for l in led_historial], "data": [l[1] for l in led_historial]})
 
 @api_blueprint.route('/sensor/humitat', methods=['GET'])
 def humitat():
     request_msg = {'type': 'getLectura', 'id': 2}
     request_queue.put(request_msg)
-    humitat = False
-    while(not humitat):
-        humitat = response_queue.get()
-    if not isinstance(humitat, tuple):
+    
+    response = False
+    while isinstance(response, bool):
+        response = response_queue.get()
+    
+    if not isinstance(response, tuple):
         return jsonify({"error": "Error retrieving humidity"}), 500
+    
+    if response[0] == request_msg['id']:
+        return jsonify({"humidity": response[2], "data": response[1]})
+    else:
+        return jsonify({"error": "Invalid response ID"}), 500
 
-    return jsonify({"temps": humitat[1], "data": humitat[0]})
+
+    
 
 @api_blueprint.route('/sensor/temperatura', methods=['GET'])
 def temperatura():
-    request_msg = {'type': 'getLectura', 'id': 1}
+    request_msg = {'type': 'getLectura', 'id': 0}
     request_queue.put(request_msg)
-    temperatura = False
-    while(not temperatura):
-        temperatura = response_queue.get()
-    if not isinstance(temperatura, tuple):
+    
+    response = False
+    while isinstance(response, bool):
+        response = response_queue.get()
+    
+    if not isinstance(response, tuple):
         return jsonify({"error": "Error retrieving temperature"}), 500
+    
+    if response[0] == request_msg['id']:
+        return jsonify({"temps": response[2], "data": response[1]})
+    else:
+        return jsonify({"error": "Invalid response ID"}), 500
 
-    return jsonify({"temps": temperatura[1], "data": temperatura[0]})
+    
 
 @api_blueprint.route('/led', methods=['GET', 'POST'])
 def led():
     if request.method == 'GET':
-        request_msg = {'type': 'getLectura', 'id': 0}
+        request_msg = {'type': 'getLectura', 'id': 1}
         request_queue.put(request_msg)
         led = False
         while(not led):
