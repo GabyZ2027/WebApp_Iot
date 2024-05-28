@@ -25,7 +25,7 @@ def temperatura_historial():
     if not isinstance(response, tuple):
         return jsonify({"error": "Error retrieving humidity"}), 500
     if response[0] == "get"+str(request_msg['id']):
-        return jsonify({"temps": [t[1] for t in response[1]], "data": [t[0] for t in response[1]]})
+        return jsonify({"temps": [t[1] for t in response[1]], "data": [round(int(t[0]),1) for t in response[1]]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
@@ -41,7 +41,7 @@ def humitat_historial():
     if not isinstance(response, tuple):
         return jsonify({"error": "Error retrieving humidity"}), 500
     if response[0] == "get"+str(request_msg['id']):
-        return jsonify({"temps": [h[1] for h in response[1]], "data": [h[0] for h in response[1]]})
+        return jsonify({"temps": [h[1] for h in response[1]], "data": [round(int(h[0]),1) for h in response[1]]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
@@ -70,7 +70,7 @@ def humitat():
         return jsonify({"error": "Error retrieving humidity"}), 500
     
     if response[0] == request_msg['id']:
-        return jsonify({"humidity": response[2], "data": response[1]})
+        return jsonify({"humidity": response[2], "data": round(int(response[1]),1)})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
@@ -90,7 +90,7 @@ def temperatura():
         return jsonify({"error": "Error retrieving temperature"}), 500
     
     if response[0] == request_msg['id']:
-        return jsonify({"temps": response[2], "data": response[1]})
+        return jsonify({"temps": response[2], "data": round(int(response[1]),1)})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
