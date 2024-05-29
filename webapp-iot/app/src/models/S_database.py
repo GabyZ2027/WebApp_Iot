@@ -71,6 +71,8 @@ class DatabaseServer(Process):
             return self.register_user(request['username'], request['password'])
         elif request['type'] == 'loginUser':
             return self.login_user(request['username'], request['password'])
+        elif request['type'] == 'getUser':
+            return self.getUser(request['name'])
 
     def get_lectura(self, id):
         try:

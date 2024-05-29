@@ -1,10 +1,16 @@
 from flask import Flask,Blueprint,render_template, request, redirect, url_for, flash, session
+from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
+from flask_wtf.csrf import CSRFProtect
+from werkzeug.security import check_password_hash
 from config import Config
 from multiprocessing import Queue
-
+#from src.models.U_database import Usuaris_BD
 
 auth_blueprint = Blueprint('auth_blueprint',__name__)
 
+login_manager = LoginManager(auth_blueprint)
+
+csrf = CSRFProtect()
 
 def set_queues(s_request_queues, s_response_queues):
     global request_queues, response_queues
@@ -14,6 +20,23 @@ def set_queues(s_request_queues, s_response_queues):
 def send_request(queue_name, request):
     request_queues[queue_name].put(request)
     return response_queues[queue_name].get()
+
+
+class User(UserMixin):
+    def __init__(self, username):
+        self.id = username  #Flask-Login requiere un atributo `id`
+        self.username = username
+
+@login_manager.user_loader
+def load_user(username):
+    response = send_request('auth', {'type': 'getUser', 'username': username})
+    if response:
+        return User(username)
+    return None
+
+@login_manager.unauthorized_handler
+def unauthorized():
+    return redirect(url_for('auth_blueprint.login'))
 
 @auth_blueprint.route('/register', methods=['GET', 'POST'])
 def register():
@@ -38,23 +61,23 @@ def login():
         username = request.form['username']
         password = request.form['password']
         response = send_request('login', {'type': 'loginUser', 'username': username, 'password': password})
-        print(password)
         if response:
             session['username'] = username
             flash('Login successful.', 'success')
             return redirect(url_for('auth_blueprint.home'))
         else:
-            print("Error")
             flash('Invalid username or password.', 'error')
     return render_template('login.html')
 
 @auth_blueprint.route('/logout')
+@login_required
 def logout():
     session.pop('username', None)
     flash('Logout successful.', 'success')
     return redirect(url_for('auth_blueprint.login'))
 
 @auth_blueprint.route('/home')
+@login_required
 def home():
     return render_template('home.html')
 

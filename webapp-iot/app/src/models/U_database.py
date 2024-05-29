@@ -1,7 +1,6 @@
 import sqlite3
 import sys
 import bcrypt
-
 class Usuaris_BD():
 
     def __init__(self, nom):

@@ -1,4 +1,5 @@
 from flask import Blueprint, jsonify, request, current_app
+from flask_login import login_required, current_user
 from src.models.kafka import KafkaManager
 from config import Config
 from time import sleep
@@ -44,6 +45,7 @@ def humitat_historial():
         return jsonify({"error": "Invalid response ID"}), 500
 
 @api_blueprint.route('/led/historial', methods=['GET'])
+@login_required
 def led_historial():
     request_msg = {'type': 'getLectures', 'id': 2, 'quantitat': 10}
     request_queues['led_hist'].put(request_msg)
@@ -85,6 +87,7 @@ def temperatura():
         return jsonify({"error": "Invalid response ID"}), 500
 
 @api_blueprint.route('/led', methods=['GET', 'POST'])
+@login_required
 def led():
     if request.method == 'GET':
         request_msg = {'type': 'getLectura', 'id': 2}
