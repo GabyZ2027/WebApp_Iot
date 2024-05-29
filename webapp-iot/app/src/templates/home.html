@@ -34,10 +34,6 @@
           <p><button onclick="toggleLED('on')" class="w3-button w3-green w3-round-large">ON</button></p>
           <p><button onclick="toggleLED('off')" class="w3-button w3-red w3-round-large">OFF</button></p>
         </div>
-        <h3 class="w3-margin">Historial</h3>
-        <div class ="w3-margin" style="width: 600px; height: 300px;">
-          <canvas id="Led"></canvas>
-        </div>  
       </div>
     </div>  
 
@@ -81,4 +77,5 @@
 
 {% block javascript %}
 <script src="{{url_for('static', filename='js/script.js')}}"></script>  
+<script src="{{url_for('static', filename='js/script_regist.js')}}"></script>  
 {% endblock %}
