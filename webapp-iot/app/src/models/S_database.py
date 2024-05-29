@@ -129,12 +129,21 @@ class DatabaseServer(Process):
             self.db_connection.rollback()
             print("Error %s:" % e.args[0])
             return False
+    
+    def getUser(self, name):
+        try:
+            self.db_cursor.execute("SELECT NOM FROM USERS WHERE NOM = ?", (name,))
+            lectura = self.db_cursor.fetchone()
+            return True if lectura else False    
+        except sqlite3.Error as e:
+            self.__con.rollback()
+            print("Error %s:" % e.args[0])
 
     def login_user(self, name, passw):
         try:
             if self.getUser(name) == True:
-                self.__cur.execute("SELECT PASSW FROM USERS WHERE NOM = ?", (name,))
-                lectura = self.__cur.fetchone()
+                self.db_cursor.execute("SELECT PASSW FROM USERS WHERE NOM = ?", (name,))
+                lectura = self.db_cursor.fetchone()
                 hash = lectura[0]
                 epassw = passw.encode()
                 if bcrypt.checkpw(epassw,hash):

@@ -38,11 +38,13 @@ def login():
         username = request.form['username']
         password = request.form['password']
         response = send_request('login', {'type': 'loginUser', 'username': username, 'password': password})
+        print(password)
         if response:
             session['username'] = username
             flash('Login successful.', 'success')
             return redirect(url_for('auth_blueprint.home'))
         else:
+            print("Error")
             flash('Invalid username or password.', 'error')
     return render_template('login.html')
 
