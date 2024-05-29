@@ -8,7 +8,7 @@ from src.models.S_database import DatabaseServer
 
 from src.routes.api import api_blueprint,set_queues
 from src.routes.AuthApi import set_queues as sq
-from src.routes.AuthApi import auth_blueprint
+from src.routes.AuthApi import auth_blueprint,login_manager
 
 app = Flask(__name__)
 
@@ -17,6 +17,9 @@ def init_app():
     app.config.from_object(Config)
     app.register_blueprint(api_blueprint, url_prefix='/')
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth_blueprint.login'
 
     # Inicializar KafkaManager
     kafka_manager = KafkaManager(Config.KAFKA_BROKER)

@@ -1,16 +1,12 @@
-from flask import Flask,Blueprint,render_template, request, redirect, url_for, flash, session
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
-from flask_wtf.csrf import CSRFProtect
-from werkzeug.security import check_password_hash
-from config import Config
 from multiprocessing import Queue
-#from src.models.U_database import Usuaris_BD
 
-auth_blueprint = Blueprint('auth_blueprint',__name__)
+# Create the Blueprint
+auth_blueprint = Blueprint('auth_blueprint', __name__)
 
-login_manager = LoginManager(auth_blueprint)
-
-csrf = CSRFProtect()
+# Initialize LoginManager
+login_manager = LoginManager()
 
 def set_queues(s_request_queues, s_response_queues):
     global request_queues, response_queues
@@ -21,10 +17,9 @@ def send_request(queue_name, request):
     request_queues[queue_name].put(request)
     return response_queues[queue_name].get()
 
-
 class User(UserMixin):
     def __init__(self, username):
-        self.id = username  #Flask-Login requiere un atributo `id`
+        self.id = username  # Flask-Login requires an `id` attribute
         self.username = username
 
 @login_manager.user_loader
@@ -62,7 +57,8 @@ def login():
         password = request.form['password']
         response = send_request('login', {'type': 'loginUser', 'username': username, 'password': password})
         if response:
-            session['username'] = username
+            user = User(username)
+            login_user(user)
             flash('Login successful.', 'success')
             return redirect(url_for('auth_blueprint.home'))
         else:
@@ -72,7 +68,7 @@ def login():
 @auth_blueprint.route('/logout')
 @login_required
 def logout():
-    session.pop('username', None)
+    logout_user()
     flash('Logout successful.', 'success')
     return redirect(url_for('auth_blueprint.login'))
 
@@ -84,9 +80,3 @@ def home():
 @auth_blueprint.route('/home-guest')
 def home_guest():
     return render_template('home_guest.html')
-
-def status_401(error):
-    return redirect(url_for('auth_blueprint.login'))
-
-def status_404(error):
-    return "<h1>Page not found</h1>", 404
