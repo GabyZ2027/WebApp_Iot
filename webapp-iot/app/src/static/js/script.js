@@ -1,36 +1,3 @@
-/*const salesData = {
-    labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio'],
-    datasets: [{
-        label: 'Ventas',
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)',
-        borderWidth: 1,
-        data: [65, 59, 80, 81, 56, 55]
-    }]
-};  
-const chartOptions = {
-    scales: {
-        yAxes: [{
-            ticks: {
-                beginAtZero: true
-            }
-        }]
-    }
-};
-const graf_temperatura = document.getElementById('Temperatura').getContext('2d');
-const temp = new Chart(graf_temperatura, {
-    type: 'line',
-    data: salesData,
-    options: chartOptions
-});
-
-const graf_humitat = document.getElementById('Humitat').getContext('2d');
-const hum = new Chart(graf_humitat, {
-    type: 'line',
-    data: salesData,
-    options: chartOptions
-});*/
-
 const chartOptions = {
     scales: {
         yAxes: [{
@@ -88,21 +55,9 @@ function Historial(path, graf, nom_label, chartVarName) {
 Historial('/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
 Historial('/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
 
-setInterval(function() {
-    Historial('/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
-}, 30000);
+setInterval(Historial,30000,'/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
 
-setInterval(function() {
-    Historial('/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
-}, 30000);
-
-// Actuador
-function toggleLED(state) {
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", '/led', true);
-    xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.send("led-status=" + (state === 'on' ? '1' : '0'));
-}
+setInterval(Historial,30000,'/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
 
 // Valores actuales
 var T = document.getElementById("Tactual");
@@ -123,32 +78,6 @@ function Actual(path, variable) {
 Actual('/sensor/temperatura', T);
 Actual('/sensor/humitat', H);
 
-setInterval(function() {
-    Actual('/sensor/temperatura', T);
-}, 30000);
+setInterval(Actual,3000,'/sensor/temperatura', T);
 
-setInterval(function() {
-    Actual('/sensor/humitat', H);
-}, 30000);
-
-var L = document.getElementById("Led");
-
-function update_led(variable) {
-    var r = new XMLHttpRequest();
-    r.open('GET', '/led', true);
-    r.send();
-    r.onreadystatechange = function () {
-        if (r.status == 200 && r.readyState == 4) {
-            var response = JSON.parse(r.responseText);
-            if (response.data === '1') {
-                variable.src = "https://static.vecteezy.com/system/resources/previews/005/032/239/non_2x/bulb-light-on-free-vector.jpg";
-            } else {
-                variable.src = "https://cdn-icons-png.flaticon.com/512/32/32177.png";
-            }
-        }
-    }
-}
-
-setInterval(function() {
-    update_led(L);
-}, 20000);
+setInterval(Actual,3000,'/sensor/humitat', H);

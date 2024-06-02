@@ -1,5 +1,5 @@
 body, h1, h2, h3, h4, h5, h6 {
-    font-family: "Times New Roman", Times, serif;
+   font-family: Arial, Helvetica, sans-serif;
   }
 
 div {
@@ -10,4 +10,71 @@ div {
 .w3-image {
     height: 80px; 
     margin-right: 15px;
+}
+
+
+.canvas-container {
+    margin: 20px auto 20px;
+}
+
+.canvas-container canvas {
+    width: 40vw;
+    height: 40vh;
+}
+
+.graph-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.w3-inline-block {
+    display: inline-block;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.fixed-size {
+    width: 270px;
+    height: auto;
+    padding: 10px;
+    text-align: center;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+#LedButton {
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#Led {
+    width: 100%;
+    height: 40px;
+
+}
+
+.graph-container p,
+.graph-container span {
+    font-size: 26px;
+}
+
+.circle-background {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+  padding: 10px;
+  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.5);
+  width: 60px; 
+  height: 60px;
+}
+
+.circle-background img {
+  display: block;
+  margin: auto;
 }

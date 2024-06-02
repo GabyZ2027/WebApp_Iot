@@ -17,60 +17,86 @@
 {% endblock %}
 
 {% block header %}
-<div class="w3-bar w3-margin">
+<div class="w3-bar w3-margin" style="display: flex; justify-content: space-between; align-items: center;">
   <span class="font-weight-bold" style="font-size: 48px;">Projecte ASSI</span>
+  <a href="auth_blueprint.logout" style="margin-left: auto; margin-right: 30px;box-shadow: none;">
+    <img src="https://cdn4.iconfinder.com/data/icons/starup-business-3/120/logout_exit_sign_out_leave_quit-512.png" alt="Logout" style="width: 50px; height: 50px;">
+  </a>
 </div>
+
 {% endblock %}
 
 {% block body %}
-    <div class="w3-cell-row w3-light-blue">
-      <h1 class="w3-margin">LED</h1>
-    </div> 
-
-    <div class="w3-cell-row">
-      <div class="w3-container w3-cell">
-        <div class="w3-bar w3-margin">
-          <img id="Led" src="https://cdn-icons-png.flaticon.com/512/32/32177.png" class="w3-image w3-circle" style="width: 40 px;height: 60 px;" alt="LED"></a>
-          <p><button onclick="toggleLED('on')" class="w3-button w3-green w3-round-large">ON</button></p>
-          <p><button onclick="toggleLED('off')" class="w3-button w3-red w3-round-large">OFF</button></p>
+<div class="w3-card-4 graph-container">
+  <div class="w3-row w3-margin w3-center" style="border-radius: 10px">
+      <div class="w3-tag w3-round-large w3-light-grey fixed-size w3-margin" style="height: 170px">
+        <div class="w3-row">    
+          <div class="image-container">
+            <div class="circle-background w3-margin" style="background-color: rgb(255, 202, 202);">     
+              <img src="https://png.pngtree.com/png-clipart/20220124/original/pngtree-cartoon-hand-drawn-medical-icon-thermometer-red-flattening-png-image_7185062.png" class="w3-image w3-circle" style="height: 40px;width: 40px;"></img>
+            </div>
+          </div>
+          <p>Temperatura</p>
         </div>
+        <span id="Tactual" style = "font-size: 40;"><b>66</b></span>
       </div>
-    </div>  
-
-    <div class="w3-cell-row w3-light-blue">
-      <h1 class="w3-margin">Sensors</h1>
-    </div> 
-
-    <div class="w3-cell-row">
-
-      <div class="w3-container w3-cell">
-        <div class="w3-bar w3-margin">
-          <img src="https://cdn-icons-png.flaticon.com/512/4158/4158502.png" class="w3-image w3-circle"></a>
-          <h2>Temperatura</h2>
+      <div class="w3-tag w3-round-large w3-light-grey fixed-size w3-margin" style="height: 170px" >
+        <div class="w3-row">
+          <div class="image-container">
+            <div class="circle-background w3-margin" style="background-color: rgb(167, 234, 255);"> 
+              <img src="https://static.vecteezy.com/system/resources/previews/011/029/799/original/blue-water-drop-for-symbol-design-png.png" class="w3-image w3-circle" style="width: 40px; height: 40px;"></img>
+            </div>
+          </div>
+          <p>Humitat</p>
         </div>
-
-        <span id="Tactual" class="w3-tag w3-jumbo w3-margin w3-dark-grey w3-padding-large">66</span>
-
-        <h3 class="w3-margin">Historial</h3>
-
-        <div class ="w3-margin" style="width: 600px; height: 300px;">
-          <canvas id="Temperatura"></canvas>
-        </div>  
+        <span id="Hactual" style = "font-size: 40;"><b>66</b></span>
       </div>
+      <div class="w3-tag w3-round-large w3-light-grey fixed-size w3-margin">
+        <div class="w3-row"> 
+          <div class="image-container">
+            <div class="circle-background w3-margin" style="background-color: rgb(249, 255, 199);"> 
+              <img src="https://png.pngtree.com/png-clipart/20230527/original/pngtree-summer-sun-png-image_9171879.png" class="w3-image w3-circle" style="height: 40px;width: 40px;"></img>
+            </div>
+          </div>
+          <p>LED</p>
+        </div>
+        <button class = "w3-btn" id="LedButton"><img id ="Led" src="https://cdn-icons-png.flaticon.com/512/32/32177.png" alt="LED"></button>
+    </div>
+  </div>
+</div>
+
+    <div class="w3-cell-row" style="margin: 20px auto 20px">
+      <div class="w3-cell-row">
+        <h1 class="w3-margin w3-light-grey w3-inline-block">Historial</h1>
+      </div> 
+      <div class="w3-cell-row">
+        <div class="w3-container w3-cell">
+          <div class="w3-bar">
+            <h2>Temperatura</h2>
+          </div>
+
+          <div class="w3-card-4 graph-container">
+            <div class="w3-container w3-row">
+              <div class="canvas-container">
+                <canvas id="Temperatura"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
     
-      <div class="w3-container w3-cell">
-        <div class ="w3-bar w3-margin">
-          <img src="https://cdn-icons-png.freepik.com/512/68/68870.png" class="w3-image w3-circle"></a> 
-          <h2>Humitat</h2>
+        <div class="w3-container w3-cell">
+          <div class ="w3-bar">
+            <h2>Humitat</h2>
+          </div>
+
+          <div class="w3-card-4 graph-container">
+            <div class="w3-container w3-row">
+              <div class="canvas-container">
+                <canvas id="Humitat"></canvas>
+              </div>
+            </div>
+          </div>
         </div>
-
-        <span id="Hactual" class="w3-tag w3-jumbo w3-margin w3-dark-grey w3-padding-large">66</span>
-
-        <h3 class="w3-margin">Historial</h3>
-
-        <div class ="w3-margin" style="width: 600px; height: 300px;">
-          <canvas id="Humitat"></canvas>
-        </div>  
       </div>
     </div>
 {% endblock %}

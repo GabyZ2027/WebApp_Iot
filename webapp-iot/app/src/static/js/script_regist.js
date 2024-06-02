@@ -1,12 +1,16 @@
 // Actuador
-function toggleLED(state) {
+var ledImage = document.getElementById("Led");
+
+
+function toggleLED() {
+    var currentState = ledImage.src.includes("https://cdn-icons-png.flaticon.com/512/32/32177.png") ? 'off' : 'on'; 
+    var newState = currentState === 'on' ? 'off' : 'on';
     var xhr = new XMLHttpRequest();
     xhr.open("POST", '/led', true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-    xhr.send("led-status=" + (state === 'on' ? '1' : '0'));
+    xhr.send("led-status=" + (newState === 'on' ? '1' : '0'));
+    update_led(ledImage);
 }
-
-var L = document.getElementById("Led");
 
 function update_led(variable) {
     var r = new XMLHttpRequest();
@@ -24,6 +28,8 @@ function update_led(variable) {
     }
 }
 
-setInterval(function() {
-    update_led(L);
-}, 20000);
+ledImage.addEventListener("click", toggleLED);
+
+setInterval(update_led,20000,ledImage);
+update_led(ledImage);
+
