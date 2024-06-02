@@ -11,6 +11,18 @@
     <img class="mb-4" src="{{ url_for('static', filename='img/Logo_UPC.png') }}" alt="" width="100" height="100">
     <h1 class="h3 mb-3 fw-normal">Please register</h1>
 
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
     <div class="form-floating">
         <input type="text" class="form-control" id="floatingUsername" name="username" placeholder="Username" required>
         <label for="floatingUsername">Username</label>
