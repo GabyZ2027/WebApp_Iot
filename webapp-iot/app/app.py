@@ -41,7 +41,7 @@ if __name__ == '__main__':
     try:
         app.register_error_handler(401, status_401)
         app.register_error_handler(404, status_404)
-        app.run(ssl_context=('certs/cert.pem', 'certs/key.pem'))
+        app.run(host='194.164.172.230',port=443,ssl_context=('certs/cert.pem', 'certs/key.pem'))
         # app.run(debug=True)
     except KeyboardInterrupt:
         print("Proceso interrumpido por el usuario.")
