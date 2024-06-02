@@ -38,7 +38,7 @@ def temperatura_historial():
         print(response)
         response = response_queues['temperatura_hist'].get()
     if response[0] == "get" + str(request_msg['id']):
-        return jsonify({"temps": [t[1] for t in response[1]], "data": [t[0] for t in response[1]]})
+        return jsonify({"temps": [t[1] for t in response[1][::-1]], "data": [t[0] for t in response[1][::-1]]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
@@ -57,7 +57,7 @@ def humitat_historial():
         print(response)
         response = response_queues['humedad_hist'].get()
     if response[0] == "get" + str(request_msg['id']):
-        return jsonify({"temps": [h[1] for h in response[1]], "data": [h[0] for h in response[1]]})
+        return jsonify({"temps": [h[1] for h in response[1][::-1]], "data": [h[0] for h in response[1][::-1]]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
@@ -77,7 +77,7 @@ def led_historial():
         print(response)
         response = response_queues['led_hist'].get()
     if response[0] == "get" + str(request_msg['id']):
-        return jsonify({"temps": [l[2] for l in response[1]], "data": [l[1] for l in response[1]]})
+        return jsonify({"temps": [l[2] for l in response[1][::-1]], "data": [l[1] for l in response[1][::-1]]})
     else:
         return jsonify({"error": "Invalid response ID"}), 500
 
