@@ -56,9 +56,9 @@ function Historial(path, graf, nom_label, chartVarName,backgroundColor = 'rgba(5
 Historial('/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp','rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)');
 Historial('/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum','rgba(54, 162, 235, 0.2)','rgba(54, 162, 235, 1)');
 
-setInterval(Historial,30000,'/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
+setInterval(Historial,30000,'/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp','rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)');
 
-setInterval(Historial,30000,'/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
+setInterval(Historial,30000,'/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum','rgba(54, 162, 235, 0.2)','rgba(54, 162, 235, 1)');
 
 // Valores actuales
 var T = document.getElementById("Tactual");
