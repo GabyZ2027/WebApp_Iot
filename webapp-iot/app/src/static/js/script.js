@@ -13,7 +13,7 @@ let charthum = null;
 var graf_temperatura = document.getElementById('Temperatura').getContext('2d');
 var graf_humitat = document.getElementById('Humitat').getContext('2d');
 
-function FerGrafica(dades, temps, graf, nom_label, chart) {
+function FerGrafica(dades, temps, graf, nom_label, chart, backgroundColor = 'rgba(54, 162, 235, 0.2)', borderColor = 'rgba(54, 162, 235, 1)', borderWidth = 1) {
     if (chart) {
         chart.destroy();
     }
@@ -21,9 +21,9 @@ function FerGrafica(dades, temps, graf, nom_label, chart) {
         labels: temps,
         datasets: [{
             label: nom_label,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 1,
+            backgroundColor: backgroundColor,
+            borderColor: borderColor,
+            borderWidth: borderWidth,
             data: dades
         }]
     };
@@ -33,6 +33,19 @@ function FerGrafica(dades, temps, graf, nom_label, chart) {
         options: chartOptions
     });
 }
+
+// Llamada a la función con colores personalizados
+var miGrafica = FerGrafica(
+    [10, 20, 30, 40], // datos
+    ['Enero', 'Febrero', 'Marzo', 'Abril'], // etiquetas de tiempo
+    document.getElementById('miGrafico'), // elemento del canvas
+    'Ventas', // nombre del label
+    null, // chart existente (null si no hay)
+    'rgba(255, 99, 132, 0.2)', // color de fondo personalizado
+    'rgba(255, 99, 132, 1)', // color de línea personalizado
+    2 // ancho de línea personalizado
+);
+
 
 // Historials
 function Historial(path, graf, nom_label, chartVarName) {
