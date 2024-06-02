@@ -34,28 +34,16 @@ function FerGrafica(dades, temps, graf, nom_label, chart, backgroundColor = 'rgb
     });
 }
 
-// Llamada a la función con colores personalizados
-var miGrafica = FerGrafica(
-    [10, 20, 30, 40], // datos
-    ['Enero', 'Febrero', 'Marzo', 'Abril'], // etiquetas de tiempo
-    document.getElementById('miGrafico'), // elemento del canvas
-    'Ventas', // nombre del label
-    null, // chart existente (null si no hay)
-    'rgba(255, 99, 132, 0.2)', // color de fondo personalizado
-    'rgba(255, 99, 132, 1)', // color de línea personalizado
-    2 // ancho de línea personalizado
-);
-
 
 // Historials
-function Historial(path, graf, nom_label, chartVarName) {
+function Historial(path, graf, nom_label, chartVarName,backgroundColor = 'rgba(54, 162, 235, 0.2)',borderColor = 'rgba(54, 162, 235, 1)') {
     var xhr = new XMLHttpRequest();
     xhr.open('GET', path, true);
     xhr.onreadystatechange = function () {
         if (xhr.readyState == 4) {
             if (xhr.status == 200) {
                 var data = JSON.parse(xhr.responseText);
-                window[chartVarName] = FerGrafica(data.data, data.temps, graf, nom_label, window[chartVarName]);
+                window[chartVarName] = FerGrafica(data.data, data.temps, graf, nom_label, window[chartVarName],backgroundColor ,borderColor);
                 console.log("Historial: ", data);
             } else {
                 console.error("Error a l'obrindre el historial:", xhr.status);
@@ -68,9 +56,9 @@ function Historial(path, graf, nom_label, chartVarName) {
 Historial('/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
 Historial('/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
 
-setInterval(Historial,30000,'/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
+setInterval(Historial,30000,'/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp','rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)');
 
-setInterval(Historial,30000,'/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
+setInterval(Historial,30000,'/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum','rgba(54, 162, 235, 0.2)','rgba(54, 162, 235, 1)');
 
 // Valores actuales
 var T = document.getElementById("Tactual");
