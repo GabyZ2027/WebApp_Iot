@@ -13,7 +13,7 @@ let charthum = null;
 var graf_temperatura = document.getElementById('Temperatura').getContext('2d');
 var graf_humitat = document.getElementById('Humitat').getContext('2d');
 
-function FerGrafica(dades, temps, graf, nom_label, chart, backgroundColor = 'rgba(54, 162, 235, 0.2)', borderColor = 'rgba(54, 162, 235, 1)', borderWidth = 1) {
+function FerGrafica(dades, temps, graf, nom_label, chart, backgroundColor = 'rgba(54, 162, 235, 0.2)', borderColor = 'rgba(54, 162, 235, 1)', borderWidth = 3) {
     if (chart) {
         chart.destroy();
     }
@@ -53,12 +53,12 @@ function Historial(path, graf, nom_label, chartVarName,backgroundColor = 'rgba(5
     xhr.send();
 }
 
-Historial('/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
-Historial('/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
+Historial('/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp','rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)');
+Historial('/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum','rgba(54, 162, 235, 0.2)','rgba(54, 162, 235, 1)');
 
-setInterval(Historial,30000,'/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp','rgba(255, 99, 132, 0.2)','rgba(255, 99, 132, 1)');
+setInterval(Historial,30000,'/sensor/temperatura/historial', graf_temperatura, 'Temperatura', 'charttemp');
 
-setInterval(Historial,30000,'/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum','rgba(54, 162, 235, 0.2)','rgba(54, 162, 235, 1)');
+setInterval(Historial,30000,'/sensor/humitat/historial', graf_humitat, 'Humitat', 'charthum');
 
 // Valores actuales
 var T = document.getElementById("Tactual");
