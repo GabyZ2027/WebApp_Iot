@@ -12,7 +12,6 @@ app/src/
 │   ├── AuthApi.py
 │   └── __init__.py
 ├── services/
-│   ├── ControlMonitorService.py
 │   ├── DataAcquisitionService.py
 │   └── __init__.py
 ├── static/
@@ -94,7 +93,7 @@ pip install -r requirements.txt
 
 ### app/src/\_\_init\_\_.py
 
-This is the main entry point of the Flask application. It initializes the Kafka consumer and the MQTT-Kafka bridge, and sets up the necessary routes.
+This is the main entry point of the Flask application. It initializes all the services and sets up the necessary routes.
 
 ### models/
 
@@ -114,7 +113,6 @@ This directory contains modules related to defining routes and API endpoints.
 
 This directory contains modules related to business logic and service layers.
 
-- **ControlMonitorService.py**: Contains the `ControlMonitorService` class for monitoring and controlling devices.
 - **DataAcquisitionService.py**: Contains the `DataAcquisitionService` class for handling data acquisition tasks.
 
 ### static/
