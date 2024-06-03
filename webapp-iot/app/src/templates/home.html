@@ -17,17 +17,17 @@
 {% endblock %}
 
 {% block header %}
-<div class="w3-bar w3-margin" style="display: flex; justify-content: space-between; align-items: center;">
-  <span class="font-weight-bold" style="font-size: 48px;">WEB APP IoT</span>
+<div class="w3-bar" style="display: flex; justify-content: space-between; align-items: center;background-color:lightgray;position:fixed;top: 0;z-index: 1000; ">
+  <span class="font-weight-bold w3-margin" style="font-size: 48px;color: black;">WEB APP IoT</span>
   <a href="/auth/login" style="margin-left: auto; margin-right: 30px;box-shadow: none;">
-    <img src="https://cdn4.iconfinder.com/data/icons/starup-business-3/120/logout_exit_sign_out_leave_quit-512.png" alt="Logout" style="width: 50px; height: 50px;">
+    <img src="https://cdn-icons-png.freepik.com/256/1077/1077114.png?semt=ais_hybrid" alt="Login" style="width: 50px; height: 50px;">
   </a>
 </div>
 
 {% endblock %}
 
 {% block body %}
-<div class="w3-card-4 graph-container">
+<div class="w3-card-2 graph-container">
   <div class="w3-row w3-margin w3-center" style="border-radius: 10px">
       <div class="w3-tag w3-round-large w3-light-grey fixed-size w3-margin" style="height: 170px">
         <div class="w3-row">    
@@ -51,54 +51,57 @@
         </div>
         <span id="Hactual" style = "font-size: 40;"><b>?</b></span>
       </div>
-      <div class="w3-tag w3-round-large w3-light-grey fixed-size w3-margin">
+      <div class="w3-tag w3-round-large w3-light-grey fixed-size w3-margin" style="height: 170px">
         <div class="w3-row"> 
           <div class="image-container">
-            <div class="circle-background w3-margin" style="background-color: rgb(249, 255, 199);"> 
-              <img src="https://png.pngtree.com/png-clipart/20230527/original/pngtree-summer-sun-png-image_9171879.png" class="w3-image w3-circle" style="height: 40px;width: 40px;"></img>
+            <div class="circle-background w3-margin" id="ledBackground" style="background-color: rgb(233, 233, 233);"> 
+              <img src="https://static.vecteezy.com/system/resources/previews/016/349/263/non_2x/black-lightbulb-outline-drawing-icon-free-png.png" class="w3-image w3-circle" style="height: 40px;width: 40px;"></img>
             </div>
           </div>
           <p>LED</p>
         </div>
-        <button class = "w3-btn" id="LedButton"><img id ="Led" src="https://cdn-icons-png.flaticon.com/512/32/32177.png" alt="LED"></button>
-    </div>
+        <label>
+            <input type="checkbox" name="checkboxName" class="checkbox" id="ledCheckbox" />
+            <div class="switch w3-margin"></div>
+        </label>
+      </div>
   </div>
 </div>
 
-    <div class="w3-cell-row" style="margin: 20px auto 20px">
-      <div class="w3-cell-row">
-        <h1 class="w3-margin w3-light-grey w3-inline-block">Historial</h1>
-      </div> 
-      <div class="w3-cell-row">
-        <div class="w3-container w3-cell">
-          <div class="w3-bar">
-            <h2>Temperatura</h2>
-          </div>
+<div class="w3-cell-row" style="margin: 20px auto 25px; padding: 0 40px;">
+  <div class="w3-cell-row">
+    <h1 class="w3-margin w3-inline-block" style="color:black;background-color: rgb(226, 226, 226);">Historial</h1>
+  </div> 
+  <div class="w3-cell-row">
+    <div class="w3-container w3-cell">
+      <div class="w3-bar">
+        <h2>Temperatura</h2>
+      </div>
 
-          <div class="w3-card-4 graph-container">
-            <div class="w3-container w3-row">
-              <div class="canvas-container">
-                <canvas id="Temperatura"></canvas>
-              </div>
-            </div>
-          </div>
-        </div>
-    
-        <div class="w3-container w3-cell">
-          <div class ="w3-bar">
-            <h2>Humitat</h2>
-          </div>
-
-          <div class="w3-card-4 graph-container">
-            <div class="w3-container w3-row">
-              <div class="canvas-container">
-                <canvas id="Humitat"></canvas>
-              </div>
-            </div>
+      <div class="w3-card-4 graph-container w3-round-large" style="border-radius: 20px;">
+        <div class="w3-container w3-row">
+          <div class="canvas-container">
+            <canvas id="Temperatura"></canvas>
           </div>
         </div>
       </div>
     </div>
+
+    <div class="w3-container w3-cell">
+      <div class ="w3-bar">
+        <h2>Humitat</h2>
+      </div>
+
+      <div class="w3-card-4 graph-container w3-round-large" style="border-radius: 20px;">
+        <div class="w3-container w3-row">
+          <div class="canvas-container">
+            <canvas id="Humitat"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 {% endblock %}
 
 {% block javascript %}

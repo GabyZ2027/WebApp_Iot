@@ -1,35 +1,37 @@
-// Actuador
-var ledImage = document.getElementById("Led");
-
+var ledBackground = document.getElementById('ledBackground');
+var ledCheckbox = document.getElementById('ledCheckbox');
+ledCheckbox.addEventListener("change", toggleLED);
 
 function toggleLED() {
-    var currentState = ledImage.src.includes("https://cdn-icons-png.flaticon.com/512/32/32177.png") ? 'off' : 'on'; 
-    var newState = currentState === 'on' ? 'off' : 'on';
+    var newState = ledCheckbox.checked ? 'on' : 'off';
+    if (ledCheckbox.checked==true) {
+        ledBackground.style.backgroundColor='rgb(249, 255, 199)';
+    }
+    else {
+        ledBackground.style.backgroundColor='rgb(233, 233, 233)';
+    }
     var xhr = new XMLHttpRequest();
     xhr.open("POST", '/led', true);
     xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
     xhr.send("led-status=" + (newState === 'on' ? '1' : '0'));
-    update_led(ledImage);
 }
 
-function update_led(variable) {
-    var r = new XMLHttpRequest();
-    r.open('GET', '/led', true);
-    r.send();
-    r.onreadystatechange = function () {
-        if (r.status == 200 && r.readyState == 4) {
-            var response = JSON.parse(r.responseText);
+function update_led() {
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', '/led', true);
+    xhr.send();
+    xhr.onreadystatechange = function () {
+        if (xhr.status == 200 && xhr.readyState == 4) {
+            var response = JSON.parse(xhr.responseText);
             if (response.data === '1') {
-                variable.src = "https://static.vecteezy.com/system/resources/previews/005/032/239/non_2x/bulb-light-on-free-vector.jpg";
+                ledCheckbox.checked = true;
+                ledBackground.style.backgroundColor = 'rgb(249, 255, 199)';
             } else {
-                variable.src = "https://cdn-icons-png.flaticon.com/512/32/32177.png";
+                ledCheckbox.checked = false;
+                ledBackground.style.backgroundColor = 'rgb(233, 233, 233)';
             }
         }
     }
 }
 
-ledImage.addEventListener("click", toggleLED);
-
-setInterval(update_led,20000,ledImage);
-update_led(ledImage);
-
+setInterval(update_led, 2000);
