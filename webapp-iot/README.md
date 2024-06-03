@@ -1,14 +1,12 @@
 ## Project Structure
 
 ```
-webapp_iot/app/
-├── app.py
-├── config.py
+app/src/
+├── __init__.py
 ├── models/
-│   ├── database.py
 │   ├── __init__.py
 │   ├── kafka.py
-│   └── mqtt_kafka_bridge.py
+│   └── S_database.py
 ├── routes/
 │   ├── api.py
 │   ├── AuthApi.py
@@ -16,9 +14,23 @@ webapp_iot/app/
 ├── services/
 │   ├── DataAcquisitionService.py
 │   └── __init__.py
+├── static/
+│   ├── css/
+│   │   ├── login.css
+│   │   └── style.css
+│   ├── img/
+│   │   └── Logo_UPC.png
+│   └── js/
+│       ├── script.js
+│       └── script_regist.js
 └── templates/
-    ├── index.html
-    └── __init__.py
+    ├── __init__.py
+    ├── home_guest.html
+    ├── home.html
+    ├── layout.html
+    ├── login.html
+    ├── register.html
+    └── template.html
 ```
 
 ## Setup
@@ -66,7 +78,7 @@ When setting up the project on a different machine or for the first time, use th
 
 ```bash
 pip install -r requirements.txt
-```lask_app
+```
 
 ## Running the Application
 
@@ -79,17 +91,16 @@ pip install -r requirements.txt
 
 ## Application Components
 
-### app.py
+### app/src/\_\_init\_\_.py
 
-This is the main entry point of the Flask application. It initializes the Kafka consumer and the MQTT-Kafka bridge, and sets up the necessary routes.
+This is the main entry point of the Flask application. It initializes all the services and sets up the necessary routes.
 
 ### models/
 
 This directory contains modules related to data models and message handling.
 
-- **database.py**: Manages interactions with the SQLite database.
 - **kafka.py**: Contains the `KafkaManager` class which manages Kafka producers and consumers.
-- **mqtt_kafka_bridge.py**: Contains the `MQTTKafkaBridge` class that bridges messages between MQTT and Kafka.
+- **S_database.py**: Manages interactions with the SQLite database.
 
 ### routes/
 
@@ -104,8 +115,28 @@ This directory contains modules related to business logic and service layers.
 
 - **DataAcquisitionService.py**: Contains the `DataAcquisitionService` class for handling data acquisition tasks.
 
+### static/
+
+This directory contains static files such as CSS, JavaScript, and images.
+
+- **css/**: Contains CSS files for styling the application.
+  - **login.css**
+  - **style.css**
+- **img/**: Contains image files used in the application.
+  - **Logo_UPC.png**
+- **js/**: Contains JavaScript files for client-side logic.
+  - **script.js**
+  - **script_regist.js**
+
 ### templates/
 
 This directory contains HTML templates for the Flask application.
 
-- **index.html**: The main HTML template for the application.
+- **home_guest.html**: Template for guest home page.
+- **home.html**: Template for user home page.
+- **layout.html**: Base layout template.
+- **login.html**: Template for login page.
+- **register.html**: Template for registration page.
+- **template.html**: General template for other pages.
+
+By following this structure and setup guide, you should be able to get your Flask application up and running, leveraging both MQTT and Kafka for messaging.
